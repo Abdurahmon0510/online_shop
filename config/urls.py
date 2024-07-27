@@ -4,5 +4,6 @@ from django.urls import path
 from online_shop import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('', views.index, name='index'),
+    path('detail.html/',views.product_detail,name='detail'),
 ]
