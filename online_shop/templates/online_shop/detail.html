@@ -22,7 +22,7 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
@@ -49,15 +49,20 @@
         <section class="py-5">
             <div class="container px-4 px-lg-5 my-5">
                 <div class="row gx-4 gx-lg-5 align-items-center">
-                    <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="https://dummyimage.com/600x700/dee2e6/6c757d.jpg" alt="..." /></div>
+                    
+                    <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{ product.image.url }}" alt="{{ product.name }}" /></div>
                     <div class="col-md-6">
-                        <div class="small mb-1">Rating: 124 </div>
-                        <h1 class="display-5 fw-bolder">Shop item template</h1>
+                        <div class="small mb-1">{{ product.quantity }} </div>
+                        <h1 class="display-5 fw-bolder">{{ product.name }}</h1>
                         <div class="fs-5 mb-5">
-                            <span class="text-decoration-line-through">$45.00</span>
-                            <span>$40.00</span>
+                             {% if product.discount %}
+                            <span class="text-decoration-line-through">{{  product.price }}</span>
+                            <span>{{  product.discounted_price }}</span>
+                            {% else %}
+                            ${{ product.price }}
+                            {% endif  %}
                         </div>
-                        <p class="lead">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium at dolorem quidem modi. Nam sequi consequatur obcaecati excepturi alias magni, accusamus eius blanditiis delectus ipsam minima ea iste laborum vero?</p>
+                        <p class="lead">{{ product.description }}</p>
                         <div class="d-flex">
                             <form>
                                 <div class="form-group">
@@ -95,24 +100,16 @@
 
                     <div class="media card p-4 mt-2">
                         <div class="media-body">
-                          <h3 class="mt-0">John Doe</h3>
-                          Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                            {% for comment in comments %}
+                          <h3 class="mt-0">{{  comment.user }} : {{ comment.content }} </h3> <hr>
+                          
+                            {% endfor %}
                         </div>
                     </div>
 
-                    <div class="media card p-4 mt-2">
-                        <div class="media-body">
-                          <h3 class="mt-0">John Doe</h3>
-                          Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                        </div>
-                    </div>
+                    
 
-                    <div class="media card p-4 mt-2">
-                        <div class="media-body">
-                          <h3 class="mt-0">John Doe</h3>
-                          Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                        </div>
-                    </div>
+                    
 
                 </div>
 
@@ -176,9 +173,7 @@
                             </div>
                         </div>
                     </div>
-
-                  
-
+                    
                     <div class="col mb-5">
                         <div class="card h-100">
                             <!-- Product image-->

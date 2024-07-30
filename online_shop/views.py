@@ -1,11 +1,20 @@
+from django.http import HttpResponse
+from django.shortcuts import render
+from .models import Product, Category,Comment
 
-from django.shortcuts import render, get_object_or_404
-from .models import Product
 
 def index(request):
     products = Product.objects.all()
-    return render(request, 'online_shop/home.html', {'products': products})
+    categories = Category.objects.all()
+    return render(request, 'online_shop/home.html', {'products': products,
+                                                     'categories': categories})
 
-def product_detail(request):
-    return render(request, 'online_shop/detail.html')
+def product_detail(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+        comments = Comment.objects.filter(product=product_id)
+        return render(request, 'online_shop/detail.html', {'product': product, 'comments': comments})
+    except:
+        return HttpResponse('Product not found',status=404)
+
 
