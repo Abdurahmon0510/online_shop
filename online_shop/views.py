@@ -1,7 +1,9 @@
-from django.http import HttpResponse
-from django.shortcuts import render,get_object_or_404,redirect
-from .models import Product, Category,Comment,Order
 from typing import Optional
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from .forms import CommentModelForm, OrderModelForm, ProductModelForm
+from .models import Product, Category, Comment
+from django.contrib.auth.decorators import login_required
 
 
 def index(request, category_id: Optional[int] = None):
@@ -23,30 +25,64 @@ def product_detail(request, product_id):
 def add_comment(request, product_id):
     product = get_object_or_404(Product,id=product_id)
     if request.method == 'POST':
-        user = request.POST.get('user')
-        email = request.POST.get('email')
-        content = request.POST.get('content')
-        comment = Comment(user=user,email=email,content=content)
-        comment.product = product
-        comment.save()
-        return redirect('detail', product_id)
+        form = CommentModelForm(request.POST, request.FILES)
+        if form.is_valid():
+           comment = form.save(commit=False)
+           comment.product = product
+           comment.save()
+           return redirect('detail', product_id)
+
     else:
-        pass
-    return render(request,'online_shop/detail.html')
+        form = CommentModelForm()
+    return render(request,'online_shop/detail.html', {'product': product, 'form': form})
 
 def add_order(request, product_id):
     product = get_object_or_404(Product,id=product_id)
+    form=OrderModelForm()
     if request.method == 'POST':
-        user = request.POST.get('user')
-        email = request.POST.get('email')
-        quantity = request.POST.get('quantity')
-        total_price = request.POST.get('total_price')
-        order = Order(user=user,email=email, quantity=quantity, total_price=total_price)
-        order.product = product
-        order.save()
-        return redirect('detail', product_id)
-    else:
-        pass
-    return render(request,'online_shop/detail.html')
 
+       form=OrderModelForm(request.POST)
+       if form.is_valid():
+           order = form.save(commit=False)
+           order.product = product
+           if product.quantity > order.quantity:
+               product.quantity -= order.quantity
+               product.save()
+               order.save()
 
+               messages.add_message(request, level=messages.SUCCESS, message='Your order is successfully saved!')
+               return redirect('detail', product_id)
+           else:
+
+             messages.add_message(
+             request, level=messages.ERROR, message='Your order  is not available!'
+        )
+
+    context = {'product': product, 'form': form}
+    return render(request, 'online_shop/detail.html', context)
+@login_required
+def add_product(request):
+    form = ProductModelForm()
+    if request.method == 'POST':
+        form = ProductModelForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    context = {'form': form}
+    return render(request, 'online_shop/add_product.html', context)
+@login_required
+def delete_product(request, product_id):
+    product = get_object_or_404(Product,id=product_id)
+    if product:
+        product.delete()
+        return redirect('index')
+@login_required
+def edit_product(request, product_id):
+     product = get_object_or_404(Product,id=product_id)
+     form = ProductModelForm(instance=product)
+     if request.method == 'POST':
+         form = ProductModelForm(request.POST, request.FILES, instance=product)
+         if form.is_valid():
+             form.save()
+             return redirect('detail', product_id)
+     return render(request, 'online_shop/edit_product.html', {'product': product, 'form': form})

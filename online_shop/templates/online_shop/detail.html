@@ -53,11 +53,16 @@
                     <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{ product.image.url }}" alt="{{ product.name }}" /></div>
                     <div class="col-md-6">
                         <div class="small mb-1"><h1> quantity: {{ product.quantity }}</h1> </div>
+                    <div>
+                        <a href="{% url 'delete_product' product.id %}"><button type="button" class="btn btn-outline-danger">Delete</button> </a>
+                        <a href="{% url 'edit_product' product.id %}"><button type="button" class="btn btn-outline-info">Edit</button> </a>
+                        
+                    </div>
                         <h1 class="display-5 fw-bolder">{{ product.name }}</h1>
                         <div class="fs-5 mb-5">
                              {% if product.discount %}
-                            <span class="text-decoration-line-through">{{  product.price }}</span>
-                            <span>{{  product.discounted_price }}</span>
+                            <span class="text-decoration-line-through">${{  product.price }}</span>
+                            <span>${{  product.discounted_price }}</span>
                             {% else %}
                             ${{ product.price }}
                             {% endif  %}
@@ -65,10 +70,23 @@
                         <p class="lead">{{ product.description }}</p>
                         <div class="d-flex">
                             <form method="post" action="{% url 'add_order' product.id %}">
-                                {% csrf_token %}
+                                {%  csrf_token %}
                                 <div class="form-group">
                                     <h2>Place an order</h2>
                                 </div>
+                                <div>
+                                    <ul>
+                                        {% for message in messages %}
+                                           {% if 'error' in message.tags %}
+                                              <li style="color: red">{{ message }}</li>
+                                        {% elif 'success' in message.tags %}
+                                        <li style="color: green">{{ message }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </ul>
+                                    
+                                </div>
+                                 
                                 
                                 <div class="form-group mb-3">
                                   <label for="formGroupExampleInput">Your name</label>
@@ -76,11 +94,11 @@
                                 </div>
                                 <div class="form-group mb-3">
                                   <label for="formGroupExampleInput2">Email</label>
-                                  <input type="text" class="form-control" name="email" placeholder="email">
+                                  <input type="email" class="form-control" name="email" placeholder="email">
                                 </div>
                                  <div class="form-group mb-3">
                                   <label for="formGroupExampleInput">Quantity</label>
-                                  <input type="text" class="form-control" name="quantity"  placeholder="Quantity">
+                                  <input type="number" class="form-control" name="quantity"  placeholder="Quantity">
                                 </div>
         
                                
@@ -125,7 +143,17 @@
                         <div class="text-center">
                             <h3>Add Comment</h3>
                         </div>
-                    
+                    <div>
+                        {% if form.errors %}
+                          {% for field in form  %}
+                             {% for error in field.errors %}
+                               <div class="alert alert-danger">
+                                   <strong>{{ error|escape }}</strong>
+                               </div>
+                             {% endfor %}
+                          {% endfor %}
+                        {% endif %}
+                    </div>
                     <form method="post" action="{% url 'add_comment' product.id %}">
                         {% csrf_token %}
                         <div class="form-group mb-3">

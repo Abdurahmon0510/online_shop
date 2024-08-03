@@ -26,17 +26,17 @@ class Product(BaseModel):
        name = models.CharField(max_length=100)
        description = models.TextField()
        price = models.DecimalField(max_digits=5, decimal_places=2)
-       image = models.ImageField(upload_to='products/',null=True, blank=True)
-       category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='products')
+       image = models.ImageField(upload_to='products/', null=True, blank=True)
+       category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
        quantity = models.IntegerField(default=1)
        rating = models.PositiveSmallIntegerField(choices=RatingChoices.choices, default=RatingChoices.zero.value)
-       discount= models.DecimalField(max_digits=5,decimal_places=2,null=True, blank=True)
+       discount = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
 
        @property
        def discounted_price(self):
            if self.discount > 0:
-               return self.price*(1 - self.discount/100)
+              return self.price*(1 - self.discount/100)
            return self.price
 
        def __str__(self):
@@ -58,13 +58,8 @@ class Order(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='orders')
     user = models.CharField(max_length=100)
     quantity = models.IntegerField(default=1)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=100, default='Pending')
-    email = models.EmailField(blank=True,null=True)
+    email = models.EmailField(blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        self.total_price = self.product.discounted_price * int(self.quantity)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Order by {self.user} for {self.product.name}'
