@@ -31,7 +31,7 @@ class Product(BaseModel):
        quantity = models.IntegerField(default=1)
        rating = models.PositiveSmallIntegerField(choices=RatingChoices.choices, default=RatingChoices.zero.value)
        discount = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-
+       related_products = models.ManyToManyField('self', blank=True)
 
        @property
        def discounted_price(self):
