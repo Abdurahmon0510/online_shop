@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'online_shop',
 ]
+JAZZMIN_SETTINGS = {
+    "site_title": "Sizning Saytingiz Sarlavhasi",
+    "site_header": "Sizning Saytingiz Admin Paneli",
+    "site_brand": "Sayt Brendi",
+    "welcome_sign": "Admin Panelga Xush Kelibsiz",
+    "copyright": "Sizning Tashkilotingiz",
+    "search_model": ["auth.User", "auth.Group"],
+    "topmenu_links": [
+        {"name": "Bosh sahifa", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Blog", "url": "/blog/", "new_window": True},
+    ],
+    "user_avatar": "https://example.com/avatar.png",
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -100,6 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 
 # Internationalization

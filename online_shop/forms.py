@@ -21,4 +21,4 @@ class OrderModelForm(ModelForm):
 class ProductModelForm(ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'image', 'category', 'quantity', 'rating', 'discount', 'related_products']
+        fields = ['name', 'description', 'price', 'image', 'category', 'quantity', 'rating', 'discount','slug']

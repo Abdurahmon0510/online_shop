@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.text import slugify
+
 
 class BaseModel(models.Model):
      created_at = models.DateTimeField(auto_now_add=True)
@@ -7,11 +9,19 @@ class BaseModel(models.Model):
          abstract = True
 class Category(models.Model):
     title = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(null=True, blank=True)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+           self.slug = slugify(self.title)
+        super(Category, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return self.title
+
     class Meta:
         verbose_name_plural = 'Categories'
+        db_table = 'category'
 
 class Product(BaseModel):
        class RatingChoices(models.IntegerChoices):
@@ -25,13 +35,15 @@ class Product(BaseModel):
 
        name = models.CharField(max_length=100)
        description = models.TextField()
-       price = models.DecimalField(max_digits=5, decimal_places=2)
+       price = models.FloatField()
        image = models.ImageField(upload_to='products/', null=True, blank=True)
        category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
        quantity = models.IntegerField(default=1)
        rating = models.PositiveSmallIntegerField(choices=RatingChoices.choices, default=RatingChoices.zero.value)
-       discount = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-       related_products = models.ManyToManyField('self', blank=True)
+       discount = models.FloatField( null=True, blank=True)
+       slug = models.SlugField(unique=True, null=True, blank=True)
+       class Meta:
+           db_table = 'products'
 
        @property
        def discounted_price(self):
@@ -49,6 +61,8 @@ class Comment(BaseModel):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_provide = models.BooleanField(default=True)
+    class Meta:
+        db_table = 'comments'
 
     def __str__(self):
         return f'Comment by {self.user} on {self.product.name}'
@@ -59,6 +73,8 @@ class Order(BaseModel):
     user = models.CharField(max_length=100)
     quantity = models.IntegerField(default=1)
     email = models.EmailField(blank=True, null=True)
+    class Meta:
+        db_table = 'orders'
 
 
     def __str__(self):
