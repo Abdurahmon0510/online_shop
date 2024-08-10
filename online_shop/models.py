@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.auth.models import AbstractUser
 
 
 class BaseModel(models.Model):
@@ -79,3 +80,5 @@ class Order(BaseModel):
 
     def __str__(self):
         return f'Order by {self.user} for {self.product.name}'
+
+

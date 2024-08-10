@@ -1,7 +1,6 @@
 
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
-
 from .models import Category, Product,Comment,Order
 from .Admin_SimpleListFilter import IsVeryExpensiveFilter
 
@@ -11,7 +10,7 @@ from .Admin_SimpleListFilter import IsVeryExpensiveFilter
 # admin.site.register(Order)
 
 admin.site.unregister(Group)
-admin.site.unregister(User)
+# admin.site.unregister(User)
 
 
 @admin.register(Category)
@@ -45,5 +44,6 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'product', 'email')
     search_fields = ('id', 'user', 'product', 'email')
     list_filter = ('user', 'product')
+
 
 
