@@ -35,17 +35,33 @@ class LoginFrom(forms.Form):
     #     return username
 
 class RegisterForm(forms.ModelForm):
-    password1 = forms.CharField(widget=forms.PasswordInput, required=True)
-    password2 = forms.CharField(widget=forms.PasswordInput, required=True)
+    confirm_password = forms.CharField(max_length=255)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ('username', 'email', 'password')
 
-    def clean(self):
-        cleaned_data = super().clean()
-        password1 = cleaned_data.get("password1")
-        password2 = cleaned_data.get("password2")
+    def clean_username(self):
+        username = self.data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError(f'This {username} is already exists')
+        return username
 
-        if password1 != password2:
-            self.add_error('password2', 'Passwords do not match')
+    def clean_password(self):
+        password = self.data.get('password')
+        confirm_password = self.data.get('confirm_password')
+        if password != confirm_password:
+            raise forms.ValidationError('Passwords do not match')
+        return self.cleaned_data['password']
+
+    def save(self, commit=True):
+        user = super(RegisterForm, self).save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        user.is_active = True
+        user.is_superuser = True
+        user.is_staff = True
+
+        if commit:
+            user.save()
+
+        return user

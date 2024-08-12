@@ -24,15 +24,23 @@ def register_page(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user=form.save(commit=True)
-            login(request,user)
+            user = form.save(commit=False)
+            # password = form.cleaned_data.get('password')
+            # user.is_active = True
+            # user.is_superuser = True
+            # user.is_staff = True
+            # user.set_password(password)
+            user.save()
+            login(request, user)
             return redirect('index')
-
-        else:
-            print(form.errors)
     else:
         form = RegisterForm()
-    return render(request,'online_shop/auth/register.html',{'form': form})
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'online_shop/auth/register.html', context)
 
 def logout_page(request):
     if request.method == 'POST':
